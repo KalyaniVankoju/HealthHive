@@ -6,8 +6,17 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <!-- Step sensors are optional, so app can install on phones without them -->
+    <uses-feature
+        android:name="android.hardware.sensor.stepcounter"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.sensor.stepdetector"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -17,9 +26,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RtrpProject"
         android:usesCleartextTraffic="true">
+
         <service
             android:name=".StepForegroundService"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="health" />
+
         <receiver
             android:name=".MedicineReminderReceiver"
             android:exported="false" />
