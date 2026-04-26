@@ -726,7 +726,10 @@ fun HealthHomeScreen(
     val totalSteps = stepList.sumOf { it.steps }
     val caloriesBurned = totalSteps * 0.04
     val waterProgress = (totalWater / 3000f).coerceIn(0f, 1f)
-
+//LaunchedEffect(Unit){
+  //  stepViewModel.insertDummyStepsOnce()
+    //waterViewModel.insertDummyWaterOnce()
+//}
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -1429,12 +1432,9 @@ fun StepsWeeklyScreen(
     val chartData = getLast7DaysWithZeros(weeklySteps)
 
     val weeklyTotal = chartData.sumOf { it.steps }
-
-    // ✅ FIXED AVERAGES
     val activeDays = chartData.count { it.steps > 0 }
     val avgActiveSteps = if (activeDays > 0) weeklyTotal / activeDays else 0
     val avgWeeklySteps = weeklyTotal / 7
-
     val bestDay = chartData.maxByOrNull { it.steps }
     val goalAchievedDays = chartData.count { it.steps >= 10000 }
 
@@ -1502,20 +1502,18 @@ fun StepsWeeklyScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ✅ UPDATED CARDS
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-
                 Card(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFDDEBFF)),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("7-Day Avg", fontSize = 14.sp, color = Color(0xFF6B7280))
+                        Text("Daily Avg", fontSize = 14.sp, color = Color(0xFF6B7280))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "$avgWeeklySteps",
@@ -1529,7 +1527,7 @@ fun StepsWeeklyScreen(
                 Card(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFE8D6)),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -1539,7 +1537,7 @@ fun StepsWeeklyScreen(
                             text = "$avgActiveSteps",
                             fontSize = 26.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFEF6C00)
+                            color = Color(0xFF5E35B1)
                         )
                     }
                 }
@@ -1611,7 +1609,7 @@ fun StepsWeeklyScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = "Green = goal reached, Orange = medium, Purple = low",
+                        text = "Purple bars show daily step count",
                         fontSize = 12.sp,
                         color = Color.Gray
                     )
@@ -1630,17 +1628,14 @@ fun StepsWeeklyScreen(
                     containerColor = Color(0xFF7E57C2)
                 )
             ) {
-                Text(
-                    text = "Back to Dashboard",
-                    fontSize = 17.sp,
-                    color = Color.White
-                )
+                Text("Back to Dashboard", fontSize = 17.sp, color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
+
 @Composable
 fun WaterWeeklyScreen(
     navController: NavHostController,
@@ -1666,7 +1661,6 @@ fun WaterWeeklyScreen(
     val bestDay = chartData.maxByOrNull { it.steps }
     val goalDays = chartData.count { it.steps >= 3000 }
     val todayGoalPercent = ((totalToday / 3000f) * 100).toInt().coerceIn(0, 100)
-    val goalColor = if (totalToday >= 3000) Color(0xFF2E7D32) else Color.Gray
 
     Box(
         modifier = Modifier
@@ -1733,7 +1727,7 @@ fun WaterWeeklyScreen(
                     Text(
                         text = "$todayGoalPercent% of daily goal",
                         fontSize = 13.sp,
-                        color = goalColor
+                        color = Color(0xFF1976D2)
                     )
                 }
             }
@@ -1748,7 +1742,7 @@ fun WaterWeeklyScreen(
                     title = "Daily Avg",
                     value = "$avgWeekly ml",
                     modifier = Modifier.weight(1f),
-                    valueColor = Color(0xFF0288D1)
+                    valueColor = Color(0xFF1976D2)
                 )
 
                 StatCard(
@@ -1769,7 +1763,7 @@ fun WaterWeeklyScreen(
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
-                        text = "💙 Highlights",
+                        text = "⭐ Weekly Highlights",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF374151)
@@ -1795,7 +1789,7 @@ fun WaterWeeklyScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Goal Days: $goalDays",
+                        text = "Goal Achieved Days: $goalDays",
                         fontSize = 16.sp,
                         color = Color(0xFF4B5563)
                     )
@@ -1844,18 +1838,13 @@ fun WaterWeeklyScreen(
                     containerColor = Color(0xFF1976D2)
                 )
             ) {
-                Text(
-                    text = "Back to Dashboard",
-                    fontSize = 17.sp,
-                    color = Color.White
-                )
+                Text("Back to Dashboard", fontSize = 17.sp, color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
-
 @Composable
 fun WaterBarChart(data: List<StepEntry>) {
     val max = (data.maxOfOrNull { it.steps } ?: 1).coerceAtLeast(1)
@@ -1971,12 +1960,6 @@ fun WeeklyBarChart(
         weeklySteps.forEach { entry ->
             val barFraction = (entry.steps.toFloat() / maxSteps).coerceIn(0f, 1f)
 
-            val barColor = when {
-                entry.steps >= 10000 -> Color(0xFF2E7D32)
-                entry.steps >= 5000 -> Color(0xFFEF6C00)
-                else -> Color(0xFF7E57C2)
-            }
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,
@@ -2000,7 +1983,7 @@ fun WeeklyBarChart(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(160.dp)
+                            .height(if (entry.steps == 0) 12.dp else 160.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color(0xFFE9E1F7))
                     )
@@ -2008,9 +1991,12 @@ fun WeeklyBarChart(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height((150 * barFraction).dp.coerceAtLeast(4.dp))
+                            .height(
+                                if (entry.steps == 0) 2.dp
+                                else (150 * barFraction).dp
+                            )
                             .clip(RoundedCornerShape(12.dp))
-                            .background(barColor)
+                            .background(Color(0xFF7E57C2))
                     )
                 }
 

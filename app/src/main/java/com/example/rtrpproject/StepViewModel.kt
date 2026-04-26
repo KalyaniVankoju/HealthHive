@@ -19,8 +19,10 @@ class StepViewModel(application: Application) : AndroidViewModel(application) {
 
     fun insertSteps(stepsToAdd: Int) {
         val today = getTodayDate()
+
         viewModelScope.launch {
             val existingEntry = repository.getStepEntryByDate(today)
+
             if (existingEntry != null) {
                 val updatedEntry = existingEntry.copy(
                     steps = existingEntry.steps + stepsToAdd
@@ -37,10 +39,36 @@ class StepViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun insertDummyStepsOnce() {
+        viewModelScope.launch {
+            val existing = repository.allStepEntries.value ?: emptyList()
+
+            // Prevent duplicate insertion
+            if (existing.isNotEmpty()) return@launch
+
+            val dates = getLast7Days()
+
+            val dummySteps = listOf(
+                4200, 6500, 3000, 8000, 5000, 7200, 10000
+            )
+
+            for (i in dates.indices) {
+                repository.insertOrUpdateStep(
+                    StepEntry(
+                        date = dates[i],
+                        steps = dummySteps[i]
+                    )
+                )
+            }
+        }
+    }
+
     fun incrementAutoStep() {
         val today = getTodayDate()
+
         viewModelScope.launch {
             val existingEntry = repository.getStepEntryByDate(today)
+
             if (existingEntry != null) {
                 val updatedEntry = existingEntry.copy(
                     steps = existingEntry.steps + 1
@@ -61,7 +89,6 @@ class StepViewModel(application: Application) : AndroidViewModel(application) {
         return repository.getTodayStepEntries(todayDate)
     }
 
-    // 🔥 ADD THIS (weekly analytics)
     fun getLast7DaysSteps(): LiveData<List<StepEntry>> {
         return repository.getLast7DaysSteps()
     }
