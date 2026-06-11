@@ -150,7 +150,6 @@ The goal of HealthHive is to help users build healthier habits through intellige
 * Hair & Skin Analysis
 * Diet Plan Generator
 
-*(Add screenshots here after testing the application.)*
 
 ---
 
