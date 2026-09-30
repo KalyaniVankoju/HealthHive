@@ -284,7 +284,6 @@ The goal of HealthHive is to help users build healthier habits through intellige
 # 👨‍💻 DEVELOPED BY
 
 **Kalyani Vankoju**
-**Janani Rathikrindha**
 Gokaraju Rangaraju Institute of Engineering and Technology (GRIET)
 
 Project: **HealthHive – Smart Health Tracking & Wellness Assistant**
